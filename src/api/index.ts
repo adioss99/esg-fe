@@ -3,6 +3,7 @@ import { toast } from "react-hot-toast";
 import { usePersistStore } from "@/stores/use-persist";
 import type { RefreshTokenResponse } from "@/types/auth-types";
 
+const BASE_URL = "http://localhost:3000/api";
 export async function apiFetch<T>(
   endpoint: RequestInfo,
   init?: RequestInit
@@ -11,7 +12,7 @@ export async function apiFetch<T>(
   const { setAuthToken, logout } = usePersistStore.getState();
 
   const doFetch = async (accessToken?: string): Promise<Response> => {
-    const res = await fetch("http://localhost:3000/api" + endpoint, {
+    const res = await fetch(BASE_URL + endpoint, {
       ...init,
       headers: {
         ...(init?.headers || {}),
@@ -26,8 +27,10 @@ export async function apiFetch<T>(
   let res = await doFetch(token || undefined);
   const resJson = await res.json();
 
-  console.log(resJson.message);
-  if (res.status === 401 && resJson.message === "Token invalid") {
+  if (
+    res.status === 401 &&
+    (resJson.message === "Token invalid" || resJson.message === "Unauthorized")
+  ) {
     // try refresh
     try {
       const refreshRes = await getRefreshToken(); // will use cookies
@@ -57,7 +60,7 @@ export async function apiFetch<T>(
 }
 
 const getRefreshToken = async (): Promise<RefreshTokenResponse> => {
-  const response = await fetch(`/api/refresh-token`, {
+  const response = await fetch(`${BASE_URL}/refresh-token`, {
     method: "GET",
     credentials: "include",
   });
