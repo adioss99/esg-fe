@@ -13,8 +13,11 @@ const IsAuth = async ({ children }: { children: React.ReactNode }) => {
   if (!token) redirect("/login");
 
   const user = jwt.decode(token as string) as UserType | null;
-
-  return <Roles role={user?.role as UserRole}>{children}</Roles>;
+  return (
+    <Roles role={user?.role as UserRole} email={user?.name as string}>
+      {children}
+    </Roles>
+  );
 };
 
 export default IsAuth;

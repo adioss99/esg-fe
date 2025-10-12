@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { use } from "react";
 import {
   Sidebar,
   SidebarFooter,
@@ -17,12 +17,15 @@ import { LogOut } from "lucide-react";
 import { useLogout } from "@/hooks/use-auth";
 import toast from "react-hot-toast";
 import SidebarMenus from "../../../components/sidebar-menu";
+import { useRoles } from "@/stores/use-roles";
 
 const SideBar = ({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) => {
+  const email = useRoles((state) => state.email);
+  console.log(email);
   const { mutateAsync: logout } = useLogout();
 
   const handleLogout = async () => {
@@ -54,7 +57,10 @@ const SideBar = ({
       </Sidebar>
       <div className="h-screen w-screen overflow-y-auto overflow-hidden py-0 sm:py-3">
         <SidebarInset className="rounded-2xl min-h-full">
-          <SidebarTrigger className="px-7" />
+          <div className="flex justify-between pr-2">
+            <SidebarTrigger className="px-7" />
+            <p>{email}</p>
+          </div>
           <div className="flex-1 overflow-y-auto p-4">{children}</div>
         </SidebarInset>
       </div>
