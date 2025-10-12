@@ -26,6 +26,7 @@ export async function apiFetch<T>(
   let res = await doFetch(token || undefined);
   const resJson = await res.json();
 
+  console.log(resJson.message);
   if (res.status === 401 && resJson.message === "Token invalid") {
     // try refresh
     try {

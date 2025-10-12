@@ -6,14 +6,22 @@ export interface LoginRequest {
 }
 export interface RegisterRequest extends LoginRequest {
   name: string;
+  role: UserRole;
 }
-
-export type UserProfileResponse = ApiResponse<{
-  id: string;
+export type UpdateUserRequest = {
   name: string;
   email: string;
-  role: string;
-}>;
+  role: UserRole;
+};
+
+export interface UserType {
+  id: number;
+  name: string;
+  email: string;
+  role: UserRole;
+}
+
+export type UserProfileResponse = ApiResponse<UserType>;
 export type LoginResponse = UserProfileResponse & {
   accessToken: string;
 };
@@ -24,3 +32,5 @@ export type RefreshTokenResponse = ApiResponse<{
 }> & {
   accessToken: string;
 };
+
+export type UserRole = "ADMIN" | "QC" | "PACKING";

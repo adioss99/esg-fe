@@ -2,27 +2,21 @@
 import React from "react";
 import {
   Sidebar,
-  SidebarContent,
   SidebarFooter,
-  SidebarGroup,
-  SidebarGroupContent,
   SidebarHeader,
   SidebarInset,
-  SidebarMenu,
   SidebarMenuButton,
-  SidebarMenuItem,
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
 import Link from "next/link";
 import { Logo } from "@/components/logo";
 import { Label } from "@/components/ui/label";
-import { redirect, usePathname } from "next/navigation";
-import { FaUsers } from "react-icons/fa";
-import { MdSpaceDashboard } from "react-icons/md";
+import { redirect } from "next/navigation";
 import { LogOut } from "lucide-react";
 import { useLogout } from "@/hooks/use-auth";
 import toast from "react-hot-toast";
+import SidebarMenus from "../../../components/sidebar-menu";
 
 const SideBar = ({
   children,
@@ -30,15 +24,6 @@ const SideBar = ({
   children: React.ReactNode;
 }>) => {
   const { mutateAsync: logout } = useLogout();
-
-  const menuItems = [
-    { title: "Dashboard", url: "/dashboard", icon: MdSpaceDashboard },
-    { title: "User List", url: "/dashboard/users", icon: FaUsers },
-  ];
-  const pathname = usePathname();
-  const isActive = (url: string, exact = false) => {
-    return exact ? pathname === url : pathname.startsWith(url);
-  };
 
   const handleLogout = async () => {
     await logout();
@@ -56,32 +41,7 @@ const SideBar = ({
             <Logo />
           </Link>
         </SidebarHeader>
-        <SidebarContent>
-          <SidebarGroup>
-            <SidebarGroupContent>
-              <SidebarMenu>
-                {menuItems.map((item) => (
-                  <SidebarMenuItem key={item.title}>
-                    <SidebarMenuButton
-                      variant="default"
-                      className={
-                        " font-medium " +
-                        (isActive(item.url, item.url === "/dashboard")
-                          ? "bg-black text-white hover:bg-black hover:text-white"
-                          : "hover:bg-gray-200")
-                      }
-                      asChild>
-                      <Link className="flex items-center gap-2" href={item.url}>
-                        {item.icon && <item.icon />}
-                        <Label>{item.title}</Label>
-                      </Link>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                ))}
-              </SidebarMenu>
-            </SidebarGroupContent>
-          </SidebarGroup>
-        </SidebarContent>
+        <SidebarMenus />
         <SidebarFooter>
           <SidebarMenuButton
             className="w-full flex justify-center truncate border border-red-500 text-red-500 hover:bg-red-500 hover:text-white"
