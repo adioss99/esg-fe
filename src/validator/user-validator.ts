@@ -11,7 +11,7 @@ export type LoginSchemaType = z.infer<typeof loginSchema>;
 export const updateUserSchema = z.object({
   name: z.string().min(1, { message: "Name is required" }),
   email: z.string().email({ message: "Invalid email address" }),
-  role: z.enum(["QC", "ADMIN", "PACKING"]),
+  role: z.enum(["QC", "ADMIN", "OPERATOR"]),
 });
 export type UpdateUserSchemaType = z.infer<typeof updateUserSchema>;
 

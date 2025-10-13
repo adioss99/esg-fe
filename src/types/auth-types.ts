@@ -33,4 +33,4 @@ export type RefreshTokenResponse = ApiResponse<{
   accessToken: string;
 };
 
-export type UserRole = "ADMIN" | "QC" | "PACKING";
+export type UserRole = "ADMIN" | "QC" | "OPERATOR";

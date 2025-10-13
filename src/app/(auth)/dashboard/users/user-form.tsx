@@ -4,6 +4,7 @@ import {
   Dialog,
   DialogClose,
   DialogContent,
+  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -106,8 +107,11 @@ export function UserFormDialog({
       <DialogTrigger asChild>{trigger}</DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>{id ? "Update user" : "Register user"}</DialogTitle>
+          <DialogTitle>{id ? "Update" : "Register"}</DialogTitle>
         </DialogHeader>
+        <DialogDescription>
+          {id ? "Update user" : "Register user"}
+        </DialogDescription>
 
         <Form {...form}>
           <form
@@ -155,7 +159,9 @@ export function UserFormDialog({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Role</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}>
                     <FormControl>
                       <SelectTrigger className="w-full">
                         <SelectValue placeholder="Role" />
@@ -164,7 +170,7 @@ export function UserFormDialog({
                     <SelectContent>
                       <SelectItem value="QC">QC</SelectItem>
                       <SelectItem value="ADMIN">Admin</SelectItem>
-                      <SelectItem value="PACKING">Packing</SelectItem>
+                      <SelectItem value="OPERATOR">Operator</SelectItem>
                     </SelectContent>
                     <FormMessage />
                   </Select>

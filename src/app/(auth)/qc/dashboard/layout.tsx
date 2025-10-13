@@ -5,7 +5,7 @@ import DashboardLayout from "./aside";
 
 const IsProtected = async ({ children }: { children: React.ReactNode }) => {
   const auth = await isAuth();
-  if (auth !== "ADMIN") redirect("/unauthorized");
+  if (auth !== "OPERATOR") redirect("/unauthorized");
   return <DashboardLayout>{children}</DashboardLayout>;
 };
 

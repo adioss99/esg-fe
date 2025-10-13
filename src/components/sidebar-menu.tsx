@@ -11,14 +11,11 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import React from "react";
 
-import { FaUsers } from "react-icons/fa";
-import { MdSpaceDashboard } from "react-icons/md";
-
-const SidebarMenus = () => {
-  const menuItems = [
-    { title: "Dashboard", url: "/dashboard", icon: MdSpaceDashboard },
-    { title: "User List", url: "/dashboard/users", icon: FaUsers },
-  ];
+const SidebarMenus = ({
+  menuItems,
+}: {
+  menuItems: { title: string; url: string; icon: React.ComponentType }[];
+}) => {
   const pathname = usePathname();
   const isActive = (url: string, exact = false) => {
     return exact ? pathname === url : pathname.startsWith(url);

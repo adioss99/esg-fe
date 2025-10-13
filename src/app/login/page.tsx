@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useLogin } from "@/hooks/use-auth";
+import { roleRedirect } from "@/lib/redirect";
 import { loginSchema, LoginSchemaType } from "@/validator/user-validator";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { redirect } from "next/navigation";
@@ -35,7 +36,8 @@ const LoginPage = () => {
       return;
     }
     toast.success("Login success.");
-    redirect("/dashboard");
+    const route = roleRedirect(res.data.role as string);
+    redirect(route);
   };
 
   return (
