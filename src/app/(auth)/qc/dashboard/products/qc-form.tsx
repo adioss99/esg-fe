@@ -51,8 +51,9 @@ export function QcFormDialog({ prodId, trigger }: QcFormDialogProps) {
   const onSubmit = async (data: any) => {
     const res = await createQC(data);
     if (!res.success) {
-      toast.error(res.message);
-      return;
+      toast.error("Failed creating qc report.");
+      console.error(res.message);
+      throw new Error(res.message);
     }
     if (error) {
       toast.error("Something went wrong.");
@@ -89,8 +90,8 @@ export function QcFormDialog({ prodId, trigger }: QcFormDialogProps) {
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value={"true"}>Passed</SelectItem>
                       <SelectItem value="false">Failed</SelectItem>
+                      <SelectItem value={"true"}>Passed</SelectItem>
                     </SelectContent>
                   </Select>
                   <FormMessage />

@@ -99,6 +99,29 @@ const ProductPage = () => {
       },
     },
     {
+      accessorKey: "QC",
+      header: () => <Label className="text-right">QC</Label>,
+      cell: ({ row }) => {
+        const passed = row.original.qcInspections; 
+        switch (passed[0]?.passed) {
+          case true:
+            return (
+              <Badge className="bg-green-600">
+                <Check />
+              </Badge>
+            );
+          case false:
+            return (
+              <Badge variant={"destructive"}>
+                <X />
+              </Badge>
+            );
+          default:
+            return <Badge variant={"outline"}>.</Badge>;
+        }
+      },
+    },
+    {
       accessorKey: "createdAt",
       header: ({ column }) => (
         <Button
@@ -131,17 +154,21 @@ const ProductPage = () => {
       cell: ({ row }) => {
         const pId = row.original.id as number;
         const referenceNo = row.getValue("referenceNo") as string;
+        const pass = row.original.qcInspections;
+        const passed = pass[0]?.passed;
         return (
           <div className="flex gap-2">
             <QcFormDialog
               trigger={
-                <Button variant={"outline"}>
+                <Button disabled={passed}>
                   <FileCheck2 />
                 </Button>
               }
               prodId={pId}
             />
-            <Button onClick={() => handleGetQcReport(referenceNo)}>
+            <Button
+              variant={"outline"}
+              onClick={() => handleGetQcReport(referenceNo)}>
               <FileDown />
             </Button>
           </div>

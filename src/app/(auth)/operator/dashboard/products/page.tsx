@@ -94,6 +94,30 @@ const ProductPage = () => {
       },
     },
     {
+      accessorKey: "QC",
+      header: () => <Label className="text-right">QC</Label>,
+      cell: ({ row }) => {
+        const passed = row.original.qcInspections;
+        console.log(passed[0]?.passed, "passed");
+        switch (passed[0]?.passed) {
+          case true:
+            return (
+              <Badge className="bg-green-600">
+                <Check />
+              </Badge>
+            );
+          case false:
+            return (
+              <Badge variant={"destructive"}>
+                <X />
+              </Badge>
+            );
+          default:
+            return <Badge variant={"outline"}>.</Badge>;
+        }
+      },
+    },
+    {
       accessorKey: "createdAt",
       header: ({ column }) => (
         <Button

@@ -7,6 +7,10 @@ export type ProductStatusType =
   | "COMPLETED"
   | "CANCELLED";
 
+export interface QcInspectionType {
+  id: number;
+  passed: boolean;
+}
 export interface ProductType {
   id: number;
   referenceNo: string;
@@ -16,6 +20,7 @@ export interface ProductType {
   createdAt: Date;
   updatedAt: Date;
   createdByUser: UserType;
+  qcInspections: QcInspectionType[] | [];
 }
 
 export type ProductsResponse = ApiResponse<ProductType[]>;
