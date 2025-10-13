@@ -3,7 +3,8 @@ import { toast } from "react-hot-toast";
 import { usePersistStore } from "@/stores/use-persist";
 import type { RefreshTokenResponse } from "@/types/auth-types";
 
-const BASE_URL =  "http://localhost:3000/api"; //"https://esg-be-production.up.railway.app/api"; //
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL + "/api";
+
 export async function apiFetch<T>(
   endpoint: RequestInfo,
   init?: RequestInit
@@ -57,6 +58,23 @@ export async function apiFetch<T>(
   }
 
   return resJson;
+}
+
+export async function fetchPDF(reportId: string) {
+  const token = usePersistStore.getState().auth.token;
+  const res = await fetch(`${BASE_URL}/qc-report/${reportId}`, {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${token ?? ""}`,
+    },
+  });
+
+  if (!res.ok) throw new Error("Failed to fetch PDF");
+
+  const blob = await res.blob();
+
+  const url = window.URL.createObjectURL(new Blob([blob]));
+  return url;
 }
 
 const getRefreshToken = async (): Promise<RefreshTokenResponse> => {

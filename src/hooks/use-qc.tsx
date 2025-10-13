@@ -1,7 +1,7 @@
 import { apiFetch, fetchPDF } from "@/api";
 import { queryClient } from "@/app/providers/query-providers";
 import { ApiResponse } from "@/types/api-type";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 
 export const useCreateQc = (prodId: number) => {
   return useMutation({
@@ -19,9 +19,9 @@ export const useCreateQc = (prodId: number) => {
 };
 
 export const useGetQcReport = () => {
-  return useMutation({
-    mutationKey: ["qc"],
-    mutationFn: (reffNo: string) => fetchPDF(reffNo),
+  return useQuery({
+    queryKey: ["qc"],
+    queryFn: ({ queryKey }) => fetchPDF(queryKey[1] as string),
     retry: false,
   });
 };

@@ -13,13 +13,7 @@ import {
   flexRender,
 } from "@tanstack/react-table";
 import { Button } from "@/components/ui/button";
-import {
-  ArrowUpDown,
-  Check,
-  FileCheck2,
-  FileDown,
-  X,
-} from "lucide-react";
+import { ArrowUpDown, Check, FileCheck2, FileDown, X } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import {
   Table,
@@ -32,18 +26,17 @@ import {
 import { Input } from "@/components/ui/input";
 import { ProductType } from "@/types/product-types";
 import { QcFormDialog } from "./qc-form";
-import DialogAlerComponent from "@/components/doalog-alert";
-import toast from "react-hot-toast";
 import { Badge } from "@/components/ui/badge";
-import { useGetQcReport } from "@/hooks/use-qc";
+// import { useGetQcReport } from "@/hooks/use-qc";
+import { fetchPDF } from "@/api";
 
 const ProductPage = () => {
   const { data, error: productError, isLoading } = useGetProducts();
-  const {
-    mutateAsync: getReport,
-    isPending,
-    error: reportError,
-  } = useGetQcReport();
+  // const {
+  //   data: getReport,
+  //   isLoading: reportLoading,
+  //   error: reportError,
+  // } = useGetQcReport();
 
   const [sorting, setSorting] = useState<SortingState>([]);
   const [reff, setReff] = useState("");
@@ -148,7 +141,6 @@ const ProductPage = () => {
               }
               prodId={pId}
             />
-
             <Button onClick={() => handleGetQcReport(referenceNo)}>
               <FileDown />
             </Button>
@@ -176,8 +168,18 @@ const ProductPage = () => {
   });
 
   const handleGetQcReport = async (orderId: string) => {
-    const res = await getReport(orderId);
-    console.log(res);
+    try {
+      const response = await fetchPDF(orderId);
+      const link = document.createElement("a");
+      link.href = response;
+      link.setAttribute("download", orderId + "report.pdf"); // Desired filename
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(response);
+    } catch (error) {
+      console.error("Error downloading file:", error);
+    }
   };
 
   return (
