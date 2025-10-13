@@ -26,87 +26,39 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useCreateProduct, useUpdateProduct } from "@/hooks/use-product";
-import {
-  ProductRequest,
-  ProductStatusType,
-  ProductType,
-  UpdateProductRequest,
-} from "@/types/product-types";
-import {
-  productSchema,
-  ProductSchemaType,
-  productStatusSchema,
-  ProductStatusSchemaType,
-} from "@/validator/product-validator";
+import { useCreateQc } from "@/hooks/use-qc";
+import { qcSchema, QcSchemaType } from "@/validator/qc-validator";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 
-interface ProductFormDialogProps extends Partial<ProductType> {
+interface QcFormDialogProps {
+  prodId: number;
   trigger: React.ReactNode; // 👈 trigger button passed as prop
 }
-export function ProductFormDialog({
-  referenceNo,
-  trigger,
-}: ProductFormDialogProps) {
-  const { mutateAsync: createProduct, isPending, error } = useCreateProduct();
-  const {
-    mutateAsync: update,
-    isPending: isUpdating,
-    error: updateError,
-  } = useUpdateProduct(referenceNo!);
-  const isEdit = !!referenceNo;
-
-  const form = useForm<ProductSchemaType | ProductStatusSchemaType>({
+export function QcFormDialog({ prodId, trigger }: QcFormDialogProps) {
+  const { mutateAsync: createQC, isPending, error } = useCreateQc(prodId!);
+  const form = useForm<QcSchemaType>({
     defaultValues: {
-      modelName: "",
-      quantity: 0 as number,
-      status: "PENDING" as ProductStatusType,
+      notes: "",
+      passed: "false",
     },
-    resolver: zodResolver(!isEdit ? productSchema : productStatusSchema),
+    resolver: zodResolver(qcSchema),
   });
 
-  const handleRegister = async (data: ProductRequest) => {
-    const qty = Number(data.quantity);
-    const payload = { ...data, qty };
-    const res = await createProduct(payload);
+  const onSubmit = async (data: any) => {
+    const res = await createQC(data);
     if (!res.success) {
-      console.error(res);
-      toast.error("Register failed.");
+      toast.error(res.message);
       return;
     }
     if (error) {
       toast.error("Something went wrong.");
       return;
     }
-    toast.success("Register success.");
-  };
-
-  const handleUpdate = async (data: UpdateProductRequest) => {
-    const res = await update(data);
-    if (!res.success) {
-      toast.error(res.message);
-      return;
-    }
-    if (updateError) {
-      toast.error("Something went wrong.");
-      return;
-    }
-    toast.success("Update success.");
-  };
-  const onSubmit = async (data: any) => {
-    try {
-      if (isEdit) {
-        handleUpdate(data);
-      } else {
-        handleRegister(data);
-      }
-    } catch (err) {
-      toast.error("Something went wrong.");
-      console.error(err);
-    }
+    toast.success("QC report success.");
   };
 
   return (
@@ -114,101 +66,63 @@ export function ProductFormDialog({
       <DialogTrigger asChild>{trigger}</DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>
-            {referenceNo ? `Update  ${referenceNo}` : "Add"}
-          </DialogTitle>
+          <DialogTitle>Create QC Report</DialogTitle>
         </DialogHeader>
-        <DialogDescription>
-          {referenceNo ? `Update product status` : "Add new product"}
-        </DialogDescription>
+        <DialogDescription>{isPending && "Creating..."}</DialogDescription>
 
         <Form {...form}>
           <form
             className="w-full space-y-4"
             onSubmit={form.handleSubmit(onSubmit)}>
-            {!isEdit ? (
-              <>
-                <FormField
-                  control={form.control}
-                  name="modelName"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Model Name</FormLabel>
-                      <FormControl>
-                        <Input
-                          type="text"
-                          placeholder="Model Name"
-                          className="w-full"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="quantity"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Quantity</FormLabel>
-                      <FormControl>
-                        <Input
-                          type="number"
-                          placeholder="Quantity"
-                          className="w-full"
-                          {...field}
-                          onChange={(e) => {
-                            const value = e.target.value;
-                            field.onChange(
-                              value === "" ? undefined : Number(value)
-                            );
-                          }}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </>
-            ) : (
-              <FormField
-                control={form.control}
-                name="status"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Status</FormLabel>
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}>
-                      <FormControl>
-                        <SelectTrigger className="w-full">
-                          <SelectValue placeholder="Status" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value="PENDING">Pending</SelectItem>
-                        <SelectItem value="IN_PROGRESS">In Progress</SelectItem>
-                        <SelectItem value="COMPLETED">Completed</SelectItem>
-                        <SelectItem value="CANCELLED">Cancelled</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            )}
-            <DialogFooter>
-              {isPending || isUpdating ? (
-                <Button disabled>Loading...</Button>
-              ) : (
-                <>
-                  <DialogClose asChild>
-                    <Button variant="outline">Cancel</Button>
-                  </DialogClose>
-                  <Button type="submit">Save changes</Button>
-                </>
+            <FormField
+              control={form.control}
+              name="passed"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Status</FormLabel>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}>
+                    <FormControl>
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Status" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value={"true"}>Passed</SelectItem>
+                      <SelectItem value="false">Failed</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
               )}
+            />
+            <FormField
+              control={form.control}
+              name="notes"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Notes</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="text"
+                      placeholder="Notes"
+                      className="w-full"
+                      {...field}
+                      value={field.value ?? ""}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <DialogFooter>
+              <DialogClose asChild>
+                <Button variant="outline">Cancel</Button>
+              </DialogClose>
+              <DialogClose asChild>
+                <Button type="submit">Save changes</Button>
+              </DialogClose>
             </DialogFooter>
           </form>
         </Form>

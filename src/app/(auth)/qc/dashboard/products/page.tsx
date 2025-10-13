@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { useDeleteProduct, useGetProducts } from "@/hooks/use-product";
+import { useGetProducts } from "@/hooks/use-product";
 import {
   ColumnDef,
   SortingState,
@@ -13,7 +13,13 @@ import {
   flexRender,
 } from "@tanstack/react-table";
 import { Button } from "@/components/ui/button";
-import { ArrowUpDown, Edit, PlusCircle, Trash } from "lucide-react";
+import {
+  ArrowUpDown,
+  Check,
+  FileCheck2,
+  FileDown,
+  X,
+} from "lucide-react";
 import { Label } from "@/components/ui/label";
 import {
   Table,
@@ -25,13 +31,20 @@ import {
 } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
 import { ProductType } from "@/types/product-types";
-import { ProductFormDialog } from "./product-form";
+import { QcFormDialog } from "./qc-form";
 import DialogAlerComponent from "@/components/doalog-alert";
 import toast from "react-hot-toast";
+import { Badge } from "@/components/ui/badge";
+import { useGetQcReport } from "@/hooks/use-qc";
 
 const ProductPage = () => {
   const { data, error: productError, isLoading } = useGetProducts();
-  const { mutateAsync: deleteProduct, isPending, error } = useDeleteProduct();
+  const {
+    mutateAsync: getReport,
+    isPending,
+    error: reportError,
+  } = useGetQcReport();
+
   const [sorting, setSorting] = useState<SortingState>([]);
   const [reff, setReff] = useState("");
 
@@ -66,7 +79,31 @@ const ProductPage = () => {
     {
       accessorKey: "status",
       header: () => <Label className="text-right">Status</Label>,
-      cell: ({ row }) => <div>{row.getValue("status")}</div>,
+      cell: ({ row }) => {
+        const status = row.getValue("status") as string;
+        switch (status) {
+          case "COMPLETED":
+            return (
+              <Badge className="bg-green-600">
+                <Check />
+                {status.toLowerCase()}
+              </Badge>
+            );
+          case "CANCELLED":
+            return (
+              <Badge variant={"destructive"} className="-red-500">
+                <X />
+                {status.toLowerCase()}
+              </Badge>
+            );
+          default:
+            return (
+              <Badge variant={"outline"} className="-gray-500">
+                {status.toLowerCase()}
+              </Badge>
+            );
+        }
+      },
     },
     {
       accessorKey: "createdAt",
@@ -99,33 +136,22 @@ const ProductPage = () => {
       accessorKey: "action",
       header: () => <Label className="text-right">Action</Label>,
       cell: ({ row }) => {
+        const pId = row.original.id as number;
         const referenceNo = row.getValue("referenceNo") as string;
         return (
           <div className="flex gap-2">
-            <ProductFormDialog
+            <QcFormDialog
               trigger={
                 <Button variant={"outline"}>
-                  <Edit />
+                  <FileCheck2 />
                 </Button>
               }
-              referenceNo={referenceNo}
+              prodId={pId}
             />
-            <DialogAlerComponent
-              trigerBtn={
-                <Button variant={"destructive"}>
-                  <Trash />
-                </Button>
-              }
-              title="Delete Product"
-              desciption="Are you sure you want to delete this product?"
-              confirmBtn={
-                <Button
-                  variant={"destructive"}
-                  onClick={() => handleDelete(referenceNo)}>
-                  Delete
-                </Button>
-              }
-            />
+
+            <Button onClick={() => handleGetQcReport(referenceNo)}>
+              <FileDown />
+            </Button>
           </div>
         );
       },
@@ -149,20 +175,11 @@ const ProductPage = () => {
     },
   });
 
-  const handleDelete = async (referenceNo: string) => {
-    const res = await deleteProduct(referenceNo);
-    if (isPending) {
-      toast.loading("Deleting...");
-    }
-    if (error) {
-      toast.error("Something went wrong.");
-      throw error;
-    }
-    if (res.success) {
-      return toast.success("Product deleted successfully.");
-    }
-    return toast.error(res.message);
+  const handleGetQcReport = async (orderId: string) => {
+    const res = await getReport(orderId);
+    console.log(res);
   };
+
   return (
     <>
       <div className="p-4">
@@ -173,13 +190,6 @@ const ProductPage = () => {
             className="border px-2 py-1 rounded-md"
             value={reff}
             onChange={(e) => setReff(e.target.value)}
-          />
-          <ProductFormDialog
-            trigger={
-              <Button>
-                <PlusCircle /> Add Product
-              </Button>
-            }
           />
         </div>
 
