@@ -1,7 +1,10 @@
+"use client";
+
+// import { cookies } from "next/headers";
 import jwt from "jsonwebtoken";
 import { UserRole } from "@/types/auth-types";
-import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
+import { usePersistStore } from "@/stores/use-persist";
 
 type DecodedToken = {
   id: string;
@@ -9,9 +12,10 @@ type DecodedToken = {
   exp: number;
 };
 
-export async function isAuth() {
-  const cookieStore = await cookies();
-  const token = cookieStore.get("refreshToken")?.value;
+export function IsAuth() {
+  const token = usePersistStore((state) => state.auth.token);
+  // const cookieStore = await cookies();
+  // const token = cookieStore.get("refreshToken")?.value;
 
   if (!token) return redirect("/login");
 
