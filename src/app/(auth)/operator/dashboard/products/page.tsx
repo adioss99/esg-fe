@@ -13,7 +13,7 @@ import {
   flexRender,
 } from "@tanstack/react-table";
 import { Button } from "@/components/ui/button";
-import { ArrowUpDown, Edit, PlusCircle, Trash } from "lucide-react";
+import { ArrowUpDown, Check, Edit, PlusCircle, Trash, X } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import {
   Table,
@@ -28,6 +28,7 @@ import { ProductType } from "@/types/product-types";
 import { ProductFormDialog } from "./product-form";
 import DialogAlerComponent from "@/components/doalog-alert";
 import toast from "react-hot-toast";
+import { Badge } from "@/components/ui/badge";
 
 const ProductPage = () => {
   const { data, error: productError, isLoading } = useGetProducts();
@@ -66,7 +67,31 @@ const ProductPage = () => {
     {
       accessorKey: "status",
       header: () => <Label className="text-right">Status</Label>,
-      cell: ({ row }) => <div>{row.getValue("status")}</div>,
+      cell: ({ row }) => {
+        const status = row.getValue("status") as string;
+        switch (status) {
+          case "COMPLETED":
+            return (
+              <Badge className="bg-green-600">
+                <Check />
+                {status.toLowerCase()}
+              </Badge>
+            );
+          case "CANCELLED":
+            return (
+              <Badge variant={"destructive"} className="-red-500">
+                <X />
+                {status.toLowerCase()}
+              </Badge>
+            );
+          default:
+            return (
+              <Badge variant={"outline"} className="-gray-500">
+                {status.toLowerCase()}
+              </Badge>
+            );
+        }
+      },
     },
     {
       accessorKey: "createdAt",
@@ -100,11 +125,14 @@ const ProductPage = () => {
       header: () => <Label className="text-right">Action</Label>,
       cell: ({ row }) => {
         const referenceNo = row.getValue("referenceNo") as string;
+        const stat =
+          row.getValue("status") === "COMPLETED" ||
+          row.getValue("status") === "CANCELLED";
         return (
           <div className="flex gap-2">
             <ProductFormDialog
               trigger={
-                <Button variant={"outline"}>
+                <Button variant={"outline"} disabled={stat}>
                   <Edit />
                 </Button>
               }
@@ -112,7 +140,7 @@ const ProductPage = () => {
             />
             <DialogAlerComponent
               trigerBtn={
-                <Button variant={"destructive"}>
+                <Button variant={"destructive"} disabled={stat}>
                   <Trash />
                 </Button>
               }
