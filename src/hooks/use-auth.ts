@@ -50,6 +50,7 @@ export const useLogout = () => {
 
 export const useGetRefreshToken = () => {
   const setAuthToken = usePersistStore((state) => state.setAuthToken);
+  const logout = usePersistStore((state) => state.logout);
   return useMutation<RefreshTokenResponse>({
     mutationKey: ["getRefreshToken"],
     mutationFn: () =>
@@ -62,6 +63,7 @@ export const useGetRefreshToken = () => {
       }
     },
     onError: () => {
+      logout();
       throw new Error("Internal Server Error");
     },
     retry: false,
