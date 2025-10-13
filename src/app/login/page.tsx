@@ -15,7 +15,6 @@ import { useLogin } from "@/hooks/use-auth";
 import { roleRedirect } from "@/lib/redirect";
 import { loginSchema, LoginSchemaType } from "@/validator/user-validator";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { redirect } from "next/navigation";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 
@@ -36,8 +35,7 @@ const LoginPage = () => {
       return;
     }
     toast.success("Login success.");
-    const route = roleRedirect(res.data.role as string);
-    redirect(route);
+    roleRedirect(res.data.role as string);
   };
 
   return (

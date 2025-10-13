@@ -69,7 +69,8 @@ export function UserFormDialog({
   const handleRegister = async (data: RegisterSchemaType) => {
     const res = await register(data);
     if (!res.success) {
-      toast.error(res.message);
+      console.error(res);
+      toast.error("Register failed.");
       return;
     }
     if (error) {
@@ -93,7 +94,7 @@ export function UserFormDialog({
   const onSubmit = async (data: any) => {
     try {
       if (isEdit) {
-        handleUpdate(data); // password not included
+        handleUpdate(data);
       } else {
         handleRegister(data);
       }

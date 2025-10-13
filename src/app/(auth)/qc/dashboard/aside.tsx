@@ -7,7 +7,12 @@ import { MdSpaceDashboard } from "react-icons/md";
 import { FaUsers } from "react-icons/fa";
 
 const menuItems = [
-  { title: "Dashboard", url: "/qc/dashboard", icon: MdSpaceDashboard },
+  {
+    title: "Dashboard",
+    url: "/qc/dashboard",
+    icon: MdSpaceDashboard,
+    exact: true,
+  },
   { title: "Product List", url: "/qc/dashboard/users", icon: FaUsers },
 ];
 

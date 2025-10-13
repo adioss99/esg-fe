@@ -11,11 +11,13 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import React from "react";
 
-const SidebarMenus = ({
-  menuItems,
-}: {
-  menuItems: { title: string; url: string; icon: React.ComponentType }[];
-}) => {
+export interface MenuItem {
+  title: string;
+  url: string;
+  icon?: React.ComponentType;
+  exact?: boolean;
+}
+const SidebarMenus = ({ menuItems }: { menuItems: MenuItem[] }) => {
   const pathname = usePathname();
   const isActive = (url: string, exact = false) => {
     return exact ? pathname === url : pathname.startsWith(url);
@@ -32,7 +34,7 @@ const SidebarMenus = ({
                   variant="default"
                   className={
                     " font-medium " +
-                    (isActive(item.url, item.url === "/dashboard")
+                    (isActive(item.url, item.exact)
                       ? "bg-black text-white hover:bg-black hover:text-white"
                       : "hover:bg-gray-200")
                   }

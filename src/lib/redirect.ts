@@ -1,12 +1,14 @@
+import { redirect } from "next/navigation";
+
 export const roleRedirect = (userRole: string) => {
   switch (userRole) {
     case "ADMIN":
-      return "/dashboard";
+      return redirect("/dashboard");
     case "QC":
-      return "/qc/dashboard";
-    case "PACKING":
-      return "/operator/dashboard";
+      return redirect("/qc/dashboard");
+    case "OPERATOR":
+      return redirect("/operator/dashboard");
     default:
-      return "/";
+      return redirect("/");
   }
 };

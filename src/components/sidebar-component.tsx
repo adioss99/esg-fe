@@ -16,7 +16,7 @@ import { redirect } from "next/navigation";
 import { LogOut } from "lucide-react";
 import { useLogout } from "@/hooks/use-auth";
 import toast from "react-hot-toast";
-import SidebarMenus from "@/components/sidebar-menu";
+import SidebarMenus, { MenuItem } from "@/components/sidebar-menu";
 import { useRoles } from "@/stores/use-roles";
 import { Button } from "@/components/ui/button";
 import {
@@ -35,7 +35,7 @@ const SidebarComponent = ({
   menuItems,
 }: Readonly<{
   children: React.ReactNode;
-  menuItems: { title: string; url: string; icon: React.ComponentType }[];
+  menuItems: MenuItem[];
 }>) => {
   const email = useRoles((state) => state.email);
   const userRole = useRoles((state) => state.userRole);
@@ -62,7 +62,7 @@ const SidebarComponent = ({
           <AlertDialog>
             <AlertDialogTrigger asChild>
               <Button
-                className="w-full flex justify-center truncate border border-red-500 text-red-500 hover:bg-red-500 hover:text-white"
+                className="w-full flex border border-red-500 text-red-500 hover:bg-red-500 hover:text-white"
                 variant={"outline"}>
                 <LogOut />
                 <Label>Logout</Label>
@@ -90,9 +90,7 @@ const SidebarComponent = ({
           <div className="flex justify-between pr-2">
             <SidebarTrigger className="px-7" />
             <div className="flex flex-col">
-              <span className="leading-none text-xs">
-                {userRole}
-              </span>
+              <span className="leading-none text-xs">{userRole}</span>
               <span className="leading-none text-sm text-muted-foreground">
                 {email}
               </span>

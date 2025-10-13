@@ -8,11 +8,14 @@ import React from "react";
 
 const Roles = ({ children }: { children: React.ReactNode }) => {
   const token = usePersistStore((state) => state.auth.token);
+
   const setuserRole = useRoles((state) => state.setuserRole);
   const setEmail = useRoles((state) => state.setEmail);
+  
   const user = jwt.decode(token as string) as { role: UserRole; email: string };
-  setuserRole(user.role);
-  setEmail(user.email);
+  
+  setuserRole(user?.role);
+  setEmail(user?.email);
 
   return <>{children}</>;
 };
