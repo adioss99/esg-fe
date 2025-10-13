@@ -3,7 +3,7 @@ import { toast } from "react-hot-toast";
 import { usePersistStore } from "@/stores/use-persist";
 import type { RefreshTokenResponse } from "@/types/auth-types";
 
-const BASE_URL = "http://localhost:3000/api";
+const BASE_URL =  "http://localhost:3000/api"; //"https://esg-be-production.up.railway.app/api"; //
 export async function apiFetch<T>(
   endpoint: RequestInfo,
   init?: RequestInit

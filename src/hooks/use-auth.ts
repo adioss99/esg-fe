@@ -21,6 +21,7 @@ export const useLogin = () => {
       if (res.success) {
         setAuthToken({
           token: res.accessToken,
+          _user: res.data.role,
         });
       }
     },

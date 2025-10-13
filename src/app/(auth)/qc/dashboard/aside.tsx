@@ -13,7 +13,7 @@ const menuItems = [
     icon: MdSpaceDashboard,
     exact: true,
   },
-  { title: "Product List", url: "/qc/dashboard/users", icon: FaUsers },
+  { title: "Product List", url: "/qc/dashboard/products", icon: FaUsers },
 ];
 
 const DashboardLayout = ({ children }: { children: React.ReactNode }) => {

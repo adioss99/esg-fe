@@ -17,6 +17,16 @@ import { useGetUsers } from "@/hooks/use-admin";
 import { UserType } from "@/types/auth-types";
 import { UserFormDialog } from "./user-form";
 import { Label } from "@/components/ui/label";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableFooter,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Input } from "@/components/ui/input";
 
 export const columns: ColumnDef<UserType>[] = [
   {
@@ -93,7 +103,7 @@ const UsersPage = () => {
   return (
     <div className="p-4">
       <div className="flex justify-between items-center mb-4">
-        <input
+        <Input
           type="text"
           placeholder="Search by email..."
           className="border px-2 py-1 rounded-md"
@@ -109,36 +119,36 @@ const UsersPage = () => {
         />
       </div>
 
-      <table className="w-full border-collapse">
-        <thead>
+      <Table className="w-full border-collapse">
+        <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (
-            <tr key={headerGroup.id}>
+            <TableRow key={headerGroup.id}>
               {headerGroup.headers.map((header) => (
-                <th key={header.id} className="border-b p-2 text-left">
+                <TableHead key={header.id} className="border-b p-2 text-left">
                   {header.isPlaceholder
                     ? null
                     : flexRender(
                         header.column.columnDef.header,
                         header.getContext()
                       )}
-                </th>
+                </TableHead>
               ))}
-            </tr>
+            </TableRow>
           ))}
-        </thead>
+        </TableHeader>
 
-        <tbody>
+        <TableBody>
           {table.getRowModel().rows.map((row) => (
-            <tr key={row.id} className="hover:bg-gray-50">
+            <TableRow key={row.id} className="hover:bg-gray-50">
               {row.getVisibleCells().map((cell) => (
-                <td key={cell.id} className="border-b p-2">
+                <TableCell key={cell.id} className="border-b p-2">
                   {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                </td>
+                </TableCell>
               ))}
-            </tr>
+            </TableRow>
           ))}
-        </tbody>
-      </table>
+        </TableBody>
+      </Table>
 
       <div className="flex justify-end gap-2 mt-4">
         <Button
@@ -154,8 +164,6 @@ const UsersPage = () => {
           Next
         </Button>
       </div>
-
-      <div></div>
     </div>
   );
 };
