@@ -51,12 +51,11 @@ export function QcFormDialog({ prodId, trigger }: QcFormDialogProps) {
     const res = await createQC(data);
     if (!res.success) {
       toast.error("Failed creating qc report.");
-      console.error(res.message);
       throw new Error(res.message);
     }
     if (error) {
       toast.error("Something went wrong.");
-      return;
+      throw new Error(error.message);
     }
     toast.success("QC report success.");
   };
