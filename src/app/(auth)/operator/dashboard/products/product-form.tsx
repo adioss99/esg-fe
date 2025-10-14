@@ -106,6 +106,8 @@ export function ProductFormDialog({
     } catch (err) {
       toast.error("Something went wrong.");
       console.error(err);
+    } finally {
+      document.getElementById("close-modal")?.click();
     }
   };
 
@@ -212,6 +214,7 @@ export function ProductFormDialog({
             </DialogFooter>
           </form>
         </Form>
+        <DialogClose id="close-modal" />
       </DialogContent>
     </Dialog>
   );

@@ -2,7 +2,7 @@ import { z } from "zod";
 
 export const productSchema = z.object({
   modelName: z.string().min(3, "Name must be at least 3 characters long"),
-  quantity: z.number(),
+  quantity: z.number().min(10, "Quantity must be at least 10"),
 });
 export type ProductSchemaType = z.infer<typeof productSchema>;
 
