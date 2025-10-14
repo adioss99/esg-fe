@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { useGetProducts } from "@/hooks/use-product";
+import { useDeleteProduct, useGetProducts } from "@/hooks/use-product";
 import {
   ColumnDef,
   SortingState,
@@ -15,7 +15,11 @@ import { Button } from "@/components/ui/button";
 import {
   ArrowUpDown,
   Check,
+  Edit,
   Eye,
+  FileCheck2,
+  FileDown,
+  Trash,
   X,
 } from "lucide-react";
 import { Label } from "@/components/ui/label";
@@ -24,24 +28,29 @@ import { ProductType } from "@/types/product-types";
 import { Badge } from "@/components/ui/badge";
 import TableComponent from "@/components/data-table";
 import ProductDetailDialog from "@/app/_components/product-detail";
+import { useRoles } from "@/stores/use-roles";
+import { fetchPDF } from "@/api";
+import { QcFormDialog } from "../(auth)/qc/dashboard/products/qc-form";
+import { ProductFormDialog } from "../(auth)/operator/dashboard/products/product-form";
+import DialogAlerComponent from "@/components/doalog-alert";
+import toast from "react-hot-toast";
 
 const ProductTableComponent = () => {
   const { data, isError, isLoading, error } = useGetProducts();
+  const {
+    mutateAsync: deleteProduct,
+    isPending,
+    error: delError,
+  } = useDeleteProduct();
   const [sorting, setSorting] = useState<SortingState>([]);
   const [filter, setFilter] = useState("");
+  const roles = useRoles((state) => state.userRole);
 
   const productsData = Array.isArray(data?.data) ? data.data : [];
   const columns: ColumnDef<ProductType>[] = [
     {
       accessorKey: "referenceNo",
-      header: ({ column }) => (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
-          Code
-          <ArrowUpDown className="h-4 w-4" />
-        </Button>
-      ),
+      header: () => <Label>Code</Label>,
       cell: ({ row }) => (
         <div className="capitalize">{row.getValue("referenceNo")}</div>
       ),
@@ -148,7 +157,13 @@ const ProductTableComponent = () => {
       accessorKey: "action",
       header: () => <Label className="text-right">Action</Label>,
       cell: ({ row }) => {
+        const pId = row.original.id as number;
         const referenceNo = row.getValue("referenceNo") as string;
+        const pass = row.original.qcInspections;
+        const passed = pass[0]?.passed;
+        const stat =
+          row.getValue("status") === "COMPLETED" ||
+          row.getValue("status") === "CANCELLED";
         return (
           <div className="flex gap-2">
             <ProductDetailDialog
@@ -158,12 +173,64 @@ const ProductTableComponent = () => {
                 </Button>
               }
               reffNo={referenceNo}
+              actionBtn={
+                roles === "QC" && (
+                  <Button
+                    size={"icon"}
+                    variant={"outline"}
+                    onClick={() => handleGetQcReport(referenceNo)}>
+                    <FileDown />
+                  </Button>
+                )
+              }
             />
+            {roles === "QC" && (
+              <QcFormDialog
+                trigger={
+                  <Button size={"icon"} disabled={passed}>
+                    <FileCheck2 />
+                  </Button>
+                }
+                prodId={pId}
+              />
+            )}
+            {roles === "OPERATOR" && (
+              <>
+                <ProductFormDialog
+                  trigger={
+                    <Button size={"icon"} variant={"outline"} disabled={stat}>
+                      <Edit />
+                    </Button>
+                  }
+                  referenceNo={referenceNo}
+                />
+                <DialogAlerComponent
+                  trigerBtn={
+                    <Button
+                      size={"icon"}
+                      variant={"destructive"}
+                      disabled={stat}>
+                      <Trash />
+                    </Button>
+                  }
+                  title="Delete Product"
+                  desciption="Are you sure you want to delete this product?"
+                  confirmBtn={
+                    <Button
+                      variant={"destructive"}
+                      onClick={() => handleDelete(referenceNo)}>
+                      Delete
+                    </Button>
+                  }
+                />
+              </>
+            )}
           </div>
         );
       },
     },
   ];
+
   const table = useReactTable({
     data: productsData,
     columns,
@@ -186,6 +253,35 @@ const ProductTableComponent = () => {
     },
   });
 
+  const handleGetQcReport = async (orderId: string) => {
+    try {
+      const response = await fetchPDF(orderId);
+      const link = document.createElement("a");
+      link.href = response;
+      link.setAttribute("download", orderId + "report.pdf"); // Desired filename
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(response);
+    } catch (error) {
+      console.error("Error downloading file:", error);
+    }
+  };
+  
+  const handleDelete = async (referenceNo: string) => {
+    const res = await deleteProduct(referenceNo);
+    if (isPending) {
+      toast.loading("Deleting...");
+    }
+    if (delError) {
+      toast.error("Something went wrong.");
+      throw delError;
+    }
+    if (res.success) {
+      return toast.success("Product deleted successfully.");
+    }
+    return toast.error(res.message);
+  };
   if (isLoading) return <p>Loading users...</p>;
   if (error) return <p className="text-red-500">Error fetching users.</p>;
   return (

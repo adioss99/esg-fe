@@ -91,7 +91,7 @@ const DashboardComponent = ({ children }: { children?: ReactNode }) => {
           {product?.data?.pending}
         </CardDashboard>
         <CardDashboard
-          title="Total Orders"
+          title="Cancelled Orders"
           descritpion="Total this month"
           queryKey={["products"]}
           isLoading={productIsLoading}
