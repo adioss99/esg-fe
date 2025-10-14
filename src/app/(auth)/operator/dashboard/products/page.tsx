@@ -10,29 +10,25 @@ import {
   getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
-  flexRender,
 } from "@tanstack/react-table";
 import { Button } from "@/components/ui/button";
 import { ArrowUpDown, Check, Edit, PlusCircle, Trash, X } from "lucide-react";
 import { Label } from "@/components/ui/label";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
 import { ProductType } from "@/types/product-types";
 import { ProductFormDialog } from "./product-form";
 import DialogAlerComponent from "@/components/doalog-alert";
 import toast from "react-hot-toast";
 import { Badge } from "@/components/ui/badge";
+import TableComponent from "@/components/table";
 
 const ProductPage = () => {
-  const { data, error: productError, isLoading } = useGetProducts();
-  const { mutateAsync: deleteProduct, isPending, error } = useDeleteProduct();
+  const { data, isError, isLoading, error } = useGetProducts();
+  const {
+    mutateAsync: deleteProduct,
+    isPending,
+    error: delError,
+  } = useDeleteProduct();
   const [sorting, setSorting] = useState<SortingState>([]);
   const [filter, setFilter] = useState("");
 
@@ -217,15 +213,17 @@ const ProductPage = () => {
     if (isPending) {
       toast.loading("Deleting...");
     }
-    if (error) {
+    if (delError) {
       toast.error("Something went wrong.");
-      throw error;
+      throw delError;
     }
     if (res.success) {
       return toast.success("Product deleted successfully.");
     }
     return toast.error(res.message);
   };
+  if (isLoading) return <p>Loading users...</p>;
+  if (error) return <p className="text-red-500">Error fetching users.</p>;
   return (
     <>
       <div className="p-4">
@@ -245,79 +243,7 @@ const ProductPage = () => {
             }
           />
         </div>
-
-        <Table className="w-full border-collapse">
-          <TableHeader>
-            {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header) => (
-                  <TableHead key={header.id} className="border-b p-2 text-left">
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
-                  </TableHead>
-                ))}
-              </TableRow>
-            ))}
-          </TableHeader>
-
-          <TableBody>
-            {table.getRowModel().rows.map((row) => (
-              <TableRow key={row.id} className="hover:bg-gray-50">
-                {row.getVisibleCells().map((cell) => (
-                  <TableCell key={cell.id} className="border-b p-2">
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </TableCell>
-                ))}
-              </TableRow>
-            ))}
-            {table.getRowModel().rows.length === 0 && !isLoading && (
-              <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  className="h-24 text-center">
-                  No results.
-                </TableCell>
-              </TableRow>
-            )}
-            {isLoading && (
-              <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  className="h-24 text-center">
-                  Loading...
-                </TableCell>
-              </TableRow>
-            )}
-            {productError && (
-              <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  className="h-24 text-center text-red-500">
-                  Something went wrong.
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
-
-        <div className="flex justify-end gap-2 mt-4">
-          <Button
-            variant="outline"
-            onClick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage()}>
-            Previous
-          </Button>
-          <Button
-            variant="outline"
-            onClick={() => table.nextPage()}
-            disabled={!table.getCanNextPage()}>
-            Next
-          </Button>
-        </div>
+        <TableComponent table={table} isLoading={isLoading} isError={isError} />
       </div>
     </>
   );

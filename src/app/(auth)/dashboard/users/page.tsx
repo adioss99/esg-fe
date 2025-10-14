@@ -9,7 +9,6 @@ import {
   getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
-  flexRender,
 } from "@tanstack/react-table";
 import { Button } from "@/components/ui/button";
 import { ArrowUpDown, Edit, PlusCircle } from "lucide-react";
@@ -17,15 +16,8 @@ import { useGetUsers } from "@/hooks/use-admin";
 import { UserType } from "@/types/auth-types";
 import { UserFormDialog } from "./user-form";
 import { Label } from "@/components/ui/label";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
+import TableComponent from "@/components/table";
 
 export const columns: ColumnDef<UserType>[] = [
   {
@@ -75,7 +67,7 @@ const UsersPage = () => {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [filter, setFilter] = useState("");
 
-  const { data, isLoading, error } = useGetUsers();
+  const { data, isLoading, isError, error } = useGetUsers();
   const usersData = Array.isArray(data?.data) ? data.data : [];
 
   const table = useReactTable({
@@ -110,8 +102,8 @@ const UsersPage = () => {
           type="text"
           placeholder="Search by email or name..."
           className="border px-2 py-1 rounded-md"
-            value={filter}
-            onChange={(e) => setFilter(e.target.value)}
+          value={filter}
+          onChange={(e) => setFilter(e.target.value)}
         />
         <UserFormDialog
           trigger={
@@ -121,52 +113,7 @@ const UsersPage = () => {
           }
         />
       </div>
-
-      <Table className="w-full border-collapse">
-        <TableHeader>
-          {table.getHeaderGroups().map((headerGroup) => (
-            <TableRow key={headerGroup.id}>
-              {headerGroup.headers.map((header) => (
-                <TableHead key={header.id} className="border-b p-2 text-left">
-                  {header.isPlaceholder
-                    ? null
-                    : flexRender(
-                        header.column.columnDef.header,
-                        header.getContext()
-                      )}
-                </TableHead>
-              ))}
-            </TableRow>
-          ))}
-        </TableHeader>
-
-        <TableBody>
-          {table.getRowModel().rows.map((row) => (
-            <TableRow key={row.id} className="hover:bg-gray-50">
-              {row.getVisibleCells().map((cell) => (
-                <TableCell key={cell.id} className="border-b p-2">
-                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                </TableCell>
-              ))}
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-
-      <div className="flex justify-end gap-2 mt-4">
-        <Button
-          variant="outline"
-          onClick={() => table.previousPage()}
-          disabled={!table.getCanPreviousPage()}>
-          Previous
-        </Button>
-        <Button
-          variant="outline"
-          onClick={() => table.nextPage()}
-          disabled={!table.getCanNextPage()}>
-          Next
-        </Button>
-      </div>
+      <TableComponent table={table} isLoading={isLoading} isError={isError} />
     </div>
   );
 };
