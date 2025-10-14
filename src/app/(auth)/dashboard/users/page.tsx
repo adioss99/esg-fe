@@ -73,7 +73,7 @@ export const columns: ColumnDef<UserType>[] = [
 
 const UsersPage = () => {
   const [sorting, setSorting] = useState<SortingState>([]);
-  const [email, setEmail] = useState("");
+  const [filter, setFilter] = useState("");
 
   const { data, isLoading, error } = useGetUsers();
   const usersData = Array.isArray(data?.data) ? data.data : [];
@@ -88,11 +88,15 @@ const UsersPage = () => {
     getFilteredRowModel: getFilteredRowModel(),
     state: {
       sorting,
-      globalFilter: email,
+      globalFilter: filter,
     },
     globalFilterFn: (row, _, filterValue) => {
       const email = row.getValue("email") as string;
-      return email.toLowerCase().includes(filterValue.toLowerCase());
+      const name = row.getValue("name") as string;
+      return (
+        email.toLowerCase().includes(filterValue.toLowerCase()) ||
+        name.toLowerCase().includes(filterValue.toLowerCase())
+      );
     },
   });
 
@@ -104,10 +108,10 @@ const UsersPage = () => {
       <div className="flex justify-between items-center mb-4">
         <Input
           type="text"
-          placeholder="Search by email..."
+          placeholder="Search by email or name..."
           className="border px-2 py-1 rounded-md"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
+            value={filter}
+            onChange={(e) => setFilter(e.target.value)}
         />
         <UserFormDialog
           trigger={

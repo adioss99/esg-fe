@@ -34,7 +34,7 @@ const ProductPage = () => {
   const { data, error: productError, isLoading } = useGetProducts();
   const { mutateAsync: deleteProduct, isPending, error } = useDeleteProduct();
   const [sorting, setSorting] = useState<SortingState>([]);
-  const [reff, setReff] = useState("");
+  const [filter, setFilter] = useState("");
 
   const productsData = Array.isArray(data?.data) ? data.data : [];
   const columns: ColumnDef<ProductType>[] = [
@@ -45,7 +45,7 @@ const ProductPage = () => {
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
           Code
-          <ArrowUpDown className="ml-2 h-4 w-4" />
+          <ArrowUpDown className="h-4 w-4" />
         </Button>
       ),
       cell: ({ row }) => (
@@ -61,7 +61,14 @@ const ProductPage = () => {
     },
     {
       accessorKey: "quantity",
-      header: () => <Label>Quantity</Label>,
+      header: ({ column }) => (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
+          Quantity
+          <ArrowUpDown className="h-4 w-4" />
+        </Button>
+      ),
       cell: ({ row }) => <div>{row.getValue("quantity")}</div>,
     },
     {
@@ -124,7 +131,7 @@ const ProductPage = () => {
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
           Date
-          <ArrowUpDown className="ml-2 h-4 w-4" />
+          <ArrowUpDown className="h-4 w-4" />
         </Button>
       ),
       cell: ({ row }) => {
@@ -193,11 +200,15 @@ const ProductPage = () => {
     getFilteredRowModel: getFilteredRowModel(),
     state: {
       sorting,
-      globalFilter: reff,
+      globalFilter: filter,
     },
     globalFilterFn: (row, _, filterValue) => {
       const code = row.getValue("referenceNo") as string;
-      return code.toLowerCase().includes(filterValue.toLowerCase());
+      const modelName = row.getValue("modelName") as string;
+      return (
+        code.toLowerCase().includes(filterValue.toLowerCase()) ||
+        modelName.toLowerCase().includes(filterValue.toLowerCase())
+      );
     },
   });
 
@@ -223,8 +234,8 @@ const ProductPage = () => {
             type="text"
             placeholder="Search by reff code..."
             className="border px-2 py-1 rounded-md"
-            value={reff}
-            onChange={(e) => setReff(e.target.value)}
+            value={filter}
+            onChange={(e) => setFilter(e.target.value)}
           />
           <ProductFormDialog
             trigger={
