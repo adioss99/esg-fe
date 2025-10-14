@@ -4,7 +4,7 @@ import React from "react";
 import SidebarComponent from "@/components/sidebar-component";
 
 import { MdSpaceDashboard } from "react-icons/md";
-import { FaUsers } from "react-icons/fa";
+import { FaBoxOpen, FaUsers } from "react-icons/fa";
 
 const menuItems = [
   {
@@ -14,6 +14,7 @@ const menuItems = [
     exact: true,
   },
   { title: "User List", url: "/dashboard/users", icon: FaUsers },
+  { title: "Product List", url: "/dashboard/products", icon: FaBoxOpen },
 ];
 
 const DashboardLayout = ({ children }: { children: React.ReactNode }) => {

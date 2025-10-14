@@ -2,7 +2,6 @@ import React from "react";
 
 import {
   Dialog,
-  DialogClose,
   DialogContent,
   DialogDescription,
   DialogFooter,
@@ -12,8 +11,8 @@ import {
 } from "@/components/ui/dialog";
 import { useGetProductDetail } from "@/hooks/use-product";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Label } from "./ui/label";
-import { Badge } from "./ui/badge";
+import { Label } from "@/components/ui/label";
+import { Badge } from "@/components/ui/badge";
 import {
   Table,
   TableBody,
@@ -21,7 +20,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "./ui/table";
+} from "@/components/ui/table";
 import { formattedDate } from "@/helpers/date";
 interface DialogProductComponentProps {
   trigerBtn: React.ReactNode;

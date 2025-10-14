@@ -1,6 +1,6 @@
 "use client";
 
-import DashboardComponent, { CardDashboard } from "@/components/dashboard";
+import DashboardComponent, { CardDashboard } from "@/app/_components/dashboard";
 import { useAdminDashboard } from "@/hooks/use-dashboard";
 import React from "react";
 

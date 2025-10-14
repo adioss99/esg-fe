@@ -21,10 +21,11 @@ export const useGetProducts = () => {
 export const useGetProductDetail = (referenceNo: string) => {
   return useQuery<ProductDetailResponse>({
     queryKey: ["product", referenceNo],
-    queryFn: () => apiFetch<ProductDetailResponse>(`/production-order/${referenceNo}`),
+    queryFn: () =>
+      apiFetch<ProductDetailResponse>(`/production-order/${referenceNo}`),
     retry: false,
   });
-}
+};
 
 export const useCreateProduct = () => {
   return useMutation({
@@ -52,6 +53,7 @@ export const useUpdateProduct = (referenceNo: string) => {
     retry: false,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["products"] });
+      queryClient.invalidateQueries({ queryKey: ["product", referenceNo] });
     },
   });
 };

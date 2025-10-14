@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { useDeleteProduct, useGetProducts } from "@/hooks/use-product";
+import { useGetProducts } from "@/hooks/use-product";
 import {
   ColumnDef,
   SortingState,
@@ -15,29 +15,18 @@ import { Button } from "@/components/ui/button";
 import {
   ArrowUpDown,
   Check,
-  Edit,
   Eye,
-  PlusCircle,
-  Trash,
   X,
 } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { ProductType } from "@/types/product-types";
-import { ProductFormDialog } from "./product-form";
-import DialogAlerComponent from "@/components/doalog-alert";
-import toast from "react-hot-toast";
 import { Badge } from "@/components/ui/badge";
 import TableComponent from "@/components/data-table";
 import ProductDetailDialog from "@/app/_components/product-detail";
 
-const ProductPage = () => {
+const ProductTableComponent = () => {
   const { data, isError, isLoading, error } = useGetProducts();
-  const {
-    mutateAsync: deleteProduct,
-    isPending,
-    error: delError,
-  } = useDeleteProduct();
   const [sorting, setSorting] = useState<SortingState>([]);
   const [filter, setFilter] = useState("");
 
@@ -160,9 +149,6 @@ const ProductPage = () => {
       header: () => <Label className="text-right">Action</Label>,
       cell: ({ row }) => {
         const referenceNo = row.getValue("referenceNo") as string;
-        const stat =
-          row.getValue("status") === "COMPLETED" ||
-          row.getValue("status") === "CANCELLED";
         return (
           <div className="flex gap-2">
             <ProductDetailDialog
@@ -172,30 +158,6 @@ const ProductPage = () => {
                 </Button>
               }
               reffNo={referenceNo}
-            />
-            <ProductFormDialog
-              trigger={
-                <Button size={"icon"} variant={"outline"} disabled={stat}>
-                  <Edit />
-                </Button>
-              }
-              referenceNo={referenceNo}
-            />
-            <DialogAlerComponent
-              trigerBtn={
-                <Button size={"icon"} variant={"destructive"} disabled={stat}>
-                  <Trash />
-                </Button>
-              }
-              title="Delete Product"
-              desciption="Are you sure you want to delete this product?"
-              confirmBtn={
-                <Button
-                  variant={"destructive"}
-                  onClick={() => handleDelete(referenceNo)}>
-                  Delete
-                </Button>
-              }
             />
           </div>
         );
@@ -224,20 +186,6 @@ const ProductPage = () => {
     },
   });
 
-  const handleDelete = async (referenceNo: string) => {
-    const res = await deleteProduct(referenceNo);
-    if (isPending) {
-      toast.loading("Deleting...");
-    }
-    if (delError) {
-      toast.error("Something went wrong.");
-      throw delError;
-    }
-    if (res.success) {
-      return toast.success("Product deleted successfully.");
-    }
-    return toast.error(res.message);
-  };
   if (isLoading) return <p>Loading users...</p>;
   if (error) return <p className="text-red-500">Error fetching users.</p>;
   return (
@@ -251,13 +199,6 @@ const ProductPage = () => {
             value={filter}
             onChange={(e) => setFilter(e.target.value)}
           />
-          <ProductFormDialog
-            trigger={
-              <Button>
-                <PlusCircle /> Add Product
-              </Button>
-            }
-          />
         </div>
         <TableComponent table={table} isLoading={isLoading} isError={isError} />
       </div>
@@ -265,4 +206,4 @@ const ProductPage = () => {
   );
 };
 
-export default ProductPage;
+export default ProductTableComponent;

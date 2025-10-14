@@ -19,8 +19,8 @@ import { ProductType } from "@/types/product-types";
 import { QcFormDialog } from "./qc-form";
 import { Badge } from "@/components/ui/badge";
 import { fetchPDF } from "@/api";
-import TableComponent from "@/components/table";
-import ProductDetailDialog from "@/components/product-detail";
+import TableComponent from "@/components/data-table";
+import ProductDetailDialog from "@/app/_components/product-detail";
 import { formattedDate } from "@/helpers/date";
 // import { useGetQcReport } from "@/hooks/use-qc";
 
@@ -149,30 +149,29 @@ const ProductPage = () => {
         const passed = pass[0]?.passed;
         return (
           <div className="flex gap-2">
-            <QcFormDialog
-              trigger={
-                <Button size={"icon-sm"} disabled={passed}>
-                  <FileCheck2 />
-                </Button>
-              }
-              prodId={pId}
-            />
-
             <ProductDetailDialog
               trigerBtn={
-                <Button size={"icon-sm"} variant={"outline"}>
+                <Button size={"icon"} variant={"outline"}>
                   <Eye />
                 </Button>
               }
               reffNo={referenceNo}
               actionBtn={
                 <Button
-                  size={"icon-sm"}
+                  size={"icon"}
                   variant={"outline"}
                   onClick={() => handleGetQcReport(referenceNo)}>
                   <FileDown />
                 </Button>
               }
+            />
+            <QcFormDialog
+              trigger={
+                <Button size={"icon"} disabled={passed}>
+                  <FileCheck2 />
+                </Button>
+              }
+              prodId={pId}
             />
           </div>
         );

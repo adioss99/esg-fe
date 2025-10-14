@@ -85,7 +85,7 @@ const SidebarComponent = ({
           </AlertDialog>
         </SidebarFooter>
       </Sidebar>
-      <div className="h-screen w-screen overflow-y-auto overflow-hidden py-0 sm:py-3">
+      <div className="h-screen w-screen overflow-y-auto overflow-hidden py-2 sm:py-3">
         <SidebarInset className="rounded-2xl min-h-full">
           <div className="flex justify-between pr-2">
             <SidebarTrigger className="px-7" />
