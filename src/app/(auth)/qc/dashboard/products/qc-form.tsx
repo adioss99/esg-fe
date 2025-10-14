@@ -30,7 +30,6 @@ import { useCreateQc } from "@/hooks/use-qc";
 import { qcSchema, QcSchemaType } from "@/validator/qc-validator";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useState } from "react";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 

@@ -12,7 +12,7 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import { Button } from "@/components/ui/button";
-import { ArrowUpDown, Check, FileCheck2, FileDown, X } from "lucide-react";
+import { ArrowUpDown, Check, Eye, FileCheck2, FileDown, X } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { ProductType } from "@/types/product-types";
@@ -20,6 +20,8 @@ import { QcFormDialog } from "./qc-form";
 import { Badge } from "@/components/ui/badge";
 import { fetchPDF } from "@/api";
 import TableComponent from "@/components/table";
+import ProductDetailDialog from "@/components/product-detail";
+import { formattedDate } from "@/helpers/date";
 // import { useGetQcReport } from "@/hooks/use-qc";
 
 const ProductPage = () => {
@@ -134,19 +136,7 @@ const ProductPage = () => {
       ),
       cell: ({ row }) => {
         const dateValue = row.getValue("createdAt");
-
-        let formattedDate = "N/A";
-        if (typeof dateValue === "string" || typeof dateValue === "number") {
-          const dateObj = new Date(dateValue);
-          if (!isNaN(dateObj.getTime())) {
-            formattedDate = dateObj.toLocaleDateString("en-US", {
-              year: "numeric",
-              month: "short",
-              day: "numeric",
-            });
-          }
-        }
-        return <div>{formattedDate}</div>;
+        return <div>{formattedDate(dateValue as string)}</div>;
       },
     },
     {
@@ -161,17 +151,29 @@ const ProductPage = () => {
           <div className="flex gap-2">
             <QcFormDialog
               trigger={
-                <Button disabled={passed}>
+                <Button size={"icon-sm"} disabled={passed}>
                   <FileCheck2 />
                 </Button>
               }
               prodId={pId}
             />
-            <Button
-              variant={"outline"}
-              onClick={() => handleGetQcReport(referenceNo)}>
-              <FileDown />
-            </Button>
+
+            <ProductDetailDialog
+              trigerBtn={
+                <Button size={"icon-sm"} variant={"outline"}>
+                  <Eye />
+                </Button>
+              }
+              reffNo={referenceNo}
+              actionBtn={
+                <Button
+                  size={"icon-sm"}
+                  variant={"outline"}
+                  onClick={() => handleGetQcReport(referenceNo)}>
+                  <FileDown />
+                </Button>
+              }
+            />
           </div>
         );
       },

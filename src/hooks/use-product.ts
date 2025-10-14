@@ -2,6 +2,7 @@ import { apiFetch } from "@/api";
 import { queryClient } from "@/app/providers/query-providers";
 import { ApiResponse } from "@/types/api-type";
 import {
+  ProductDetailResponse,
   ProductFormResponse,
   ProductRequest,
   ProductsResponse,
@@ -16,6 +17,14 @@ export const useGetProducts = () => {
     retry: false,
   });
 };
+
+export const useGetProductDetail = (referenceNo: string) => {
+  return useQuery<ProductDetailResponse>({
+    queryKey: ["product", referenceNo],
+    queryFn: () => apiFetch<ProductDetailResponse>(`/production-order/${referenceNo}`),
+    retry: false,
+  });
+}
 
 export const useCreateProduct = () => {
   return useMutation({

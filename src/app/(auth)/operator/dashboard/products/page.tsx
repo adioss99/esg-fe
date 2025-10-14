@@ -12,7 +12,15 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import { Button } from "@/components/ui/button";
-import { ArrowUpDown, Check, Edit, PlusCircle, Trash, X } from "lucide-react";
+import {
+  ArrowUpDown,
+  Check,
+  Edit,
+  Eye,
+  PlusCircle,
+  Trash,
+  X,
+} from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { ProductType } from "@/types/product-types";
@@ -21,6 +29,7 @@ import DialogAlerComponent from "@/components/doalog-alert";
 import toast from "react-hot-toast";
 import { Badge } from "@/components/ui/badge";
 import TableComponent from "@/components/table";
+import ProductDetailDialog from "@/components/product-detail";
 
 const ProductPage = () => {
   const { data, isError, isLoading, error } = useGetProducts();
@@ -101,7 +110,6 @@ const ProductPage = () => {
       header: () => <Label className="text-right">QC</Label>,
       cell: ({ row }) => {
         const passed = row.original.qcInspections;
-        console.log(passed[0]?.passed, "passed");
         switch (passed[0]?.passed) {
           case true:
             return (
@@ -157,9 +165,17 @@ const ProductPage = () => {
           row.getValue("status") === "CANCELLED";
         return (
           <div className="flex gap-2">
+            <ProductDetailDialog
+              trigerBtn={
+                <Button size={'icon-sm'} variant={"outline"}>
+                  <Eye />
+                </Button>
+              }
+              reffNo={referenceNo}
+            />
             <ProductFormDialog
               trigger={
-                <Button variant={"outline"} disabled={stat}>
+                <Button size={'icon-sm'} variant={"outline"} disabled={stat}>
                   <Edit />
                 </Button>
               }
@@ -167,7 +183,7 @@ const ProductPage = () => {
             />
             <DialogAlerComponent
               trigerBtn={
-                <Button variant={"destructive"} disabled={stat}>
+                <Button size={'icon-sm'} variant={"destructive"} disabled={stat}>
                   <Trash />
                 </Button>
               }
