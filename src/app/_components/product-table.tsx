@@ -194,7 +194,7 @@ const ProductTableComponent = () => {
         <div className="flex justify-between items-center mb-4">
           <Input
             type="text"
-            placeholder="Search by reff code..."
+            placeholder="Search by reff code and model name..."
             className="border px-2 py-1 rounded-md"
             value={filter}
             onChange={(e) => setFilter(e.target.value)}
