@@ -18,6 +18,7 @@ import { UserFormDialog } from "./user-form";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import TableComponent from "@/components/table";
+import { Badge } from "@/components/ui/badge";
 
 export const columns: ColumnDef<UserType>[] = [
   {
@@ -42,7 +43,17 @@ export const columns: ColumnDef<UserType>[] = [
   {
     accessorKey: "role",
     header: () => <Label>Role</Label>,
-    cell: ({ row }) => <div>{row.getValue("role")}</div>,
+    cell: ({ row }) => {
+      const role = row.getValue("role");
+      switch (role) {
+        case "ADMIN":
+          return <Badge variant={"outline"} className="rounded-full outline-1 text-blue-400 outline-blue-400">{role.toLowerCase()}</Badge>;
+        case "OPERATOR":
+          return <Badge variant={"outline"} className="rounded-full outline-1 text-yellow-400 outline-yellow-400">{role.toLowerCase()}</Badge>;
+        case "QC":
+          return <Badge variant={"outline"} className="rounded-full outline-1 text-red-400 outline-red-400">{role.toLowerCase()}</Badge>;
+      }
+    },
   },
   {
     accessorKey: "id",
