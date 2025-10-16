@@ -163,7 +163,7 @@ const ProductTableComponent = ({ role }: { role?: string }) => {
                   <Button
                     size={"icon"}
                     variant={"outline"}
-                    disabled={status === "COMPLETED"}
+                    disabled={status === "PENDING" || pass.length === 0}
                     onClick={() => handleGetQcReport(referenceNo)}>
                     <FileDown />
                   </Button>
@@ -175,7 +175,7 @@ const ProductTableComponent = ({ role }: { role?: string }) => {
                 trigger={
                   <Button
                     size={"icon"}
-                    disabled={passed || status !== "PENDING"}>
+                    disabled={passed || status === "PENDING" || stat}>
                     <FileCheck2 />
                   </Button>
                 }

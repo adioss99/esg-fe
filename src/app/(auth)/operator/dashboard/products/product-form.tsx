@@ -41,6 +41,7 @@ import {
 } from "@/validator/product-validator";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 
@@ -51,6 +52,9 @@ export function ProductFormDialog({
   referenceNo,
   trigger,
 }: ProductFormDialogProps) {
+  const btnRef = useRef<HTMLButtonElement>(null);
+  const [open, setOpen] = useState(false);
+
   const { mutateAsync: createProduct, isPending, error } = useCreateProduct();
   const {
     mutateAsync: update,
@@ -82,6 +86,7 @@ export function ProductFormDialog({
       return;
     }
     toast.success("Register success.");
+    btnRef.current?.click();
   };
 
   const handleUpdate = async (data: UpdateProductRequest) => {
@@ -95,6 +100,7 @@ export function ProductFormDialog({
       return;
     }
     toast.success("Update success.");
+    btnRef.current?.click();
   };
   const onSubmit = async (data: any) => {
     try {
@@ -106,13 +112,15 @@ export function ProductFormDialog({
     } catch (err) {
       toast.error("Something went wrong.");
       console.error(err);
-    } finally {
-      document.getElementById("close-modal")?.click();
     }
   };
 
+  useEffect(() => {
+    if (!open) form.reset();
+  }, [open, form]);
+  
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>{trigger}</DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
@@ -214,7 +222,7 @@ export function ProductFormDialog({
             </DialogFooter>
           </form>
         </Form>
-        <DialogClose id="close-modal" />
+        <DialogClose ref={btnRef} />
       </DialogContent>
     </Dialog>
   );

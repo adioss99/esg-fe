@@ -18,7 +18,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
+import { Input, InputPassword } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -35,11 +35,12 @@ import {
   UpdateUserSchemaType,
 } from "@/validator/user-validator";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 
 interface UserFormDialogProps extends Partial<UserType> {
-  trigger: React.ReactNode; // 👈 trigger button passed as prop
+  trigger: React.ReactNode;
 }
 export function UserFormDialog({
   id,
@@ -48,6 +49,8 @@ export function UserFormDialog({
   role,
   trigger,
 }: UserFormDialogProps) {
+  const [open, setOpen] = useState(false);
+
   const { mutateAsync: register, isPending, error } = useRegisterUser();
   const {
     mutateAsync: update,
@@ -78,6 +81,7 @@ export function UserFormDialog({
       return;
     }
     toast.success("Register success.");
+    setOpen(false);
   };
   const handleUpdate = async (data: UpdateUserSchemaType) => {
     const res = await update(data);
@@ -90,6 +94,7 @@ export function UserFormDialog({
       return;
     }
     toast.success("Update success.");
+    setOpen(false);
   };
   const onSubmit = async (data: any) => {
     try {
@@ -103,8 +108,13 @@ export function UserFormDialog({
       console.error(err);
     }
   };
+
+  useEffect(() => {
+    if (!open) form.reset();
+  }, [open, form]);
+
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>{trigger}</DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
@@ -186,8 +196,7 @@ export function UserFormDialog({
                   <FormItem>
                     <FormLabel>Password</FormLabel>
                     <FormControl>
-                      <Input
-                        type="password"
+                      <InputPassword
                         placeholder="Password"
                         className="w-full"
                         {...field}
