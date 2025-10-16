@@ -28,14 +28,14 @@ import { ProductType } from "@/types/product-types";
 import { Badge } from "@/components/ui/badge";
 import TableComponent from "@/components/data-table";
 import ProductDetailDialog from "@/app/_components/product-detail";
-import { useRoles } from "@/stores/use-roles";
 import { fetchPDF } from "@/api";
 import { QcFormDialog } from "../(auth)/qc/dashboard/products/qc-form";
 import { ProductFormDialog } from "../(auth)/operator/dashboard/products/product-form";
 import DialogAlerComponent from "@/components/doalog-alert";
 import toast from "react-hot-toast";
+import { formattedDate } from "@/helpers/date";
 
-const ProductTableComponent = () => {
+const ProductTableComponent = ({ role }: { role?: string }) => {
   const { data, isError, isLoading, error } = useGetProducts();
   const {
     mutateAsync: deleteProduct,
@@ -44,7 +44,6 @@ const ProductTableComponent = () => {
   } = useDeleteProduct();
   const [sorting, setSorting] = useState<SortingState>([]);
   const [filter, setFilter] = useState("");
-  const roles = useRoles((state) => state.userRole);
 
   const productsData = Array.isArray(data?.data) ? data.data : [];
   const columns: ColumnDef<ProductType>[] = [
@@ -65,42 +64,40 @@ const ProductTableComponent = () => {
     {
       accessorKey: "quantity",
       header: ({ column }) => (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
-          Quantity
-          <ArrowUpDown className="h-4 w-4" />
-        </Button>
+        <div className="text-center">
+          <Button
+            variant="ghost"
+            onClick={() =>
+              column.toggleSorting(column.getIsSorted() === "asc")
+            }>
+            Quantity
+            <ArrowUpDown className="h-4 w-4" />
+          </Button>
+        </div>
       ),
-      cell: ({ row }) => <div>{row.getValue("quantity")}</div>,
+      cell: ({ row }) => (
+        <div className="text-center">{row.getValue("quantity")}</div>
+      ),
     },
     {
       accessorKey: "status",
       header: () => <Label className="text-right">Status</Label>,
       cell: ({ row }) => {
         const status = row.getValue("status") as string;
+        let style = "bg-gray-200 outline-0";
         switch (status) {
           case "COMPLETED":
-            return (
-              <Badge className="bg-green-600">
-                <Check />
-                {status.toLowerCase()}
-              </Badge>
-            );
+            style = "bg-green-200 text-green-600 border-0";
+            break;
           case "CANCELLED":
-            return (
-              <Badge variant={"destructive"} className="-red-500">
-                <X />
-                {status.toLowerCase()}
-              </Badge>
-            );
-          default:
-            return (
-              <Badge variant={"outline"} className="-gray-500">
-                {status.toLowerCase()}
-              </Badge>
-            );
+            style = "bg-red-200 text-red-600 border-0";
+            break;
         }
+        return (
+          <Badge variant={"outline"} className={`${style}`}>
+            {status.toLowerCase()}
+          </Badge>
+        );
       },
     },
     {
@@ -122,7 +119,7 @@ const ProductTableComponent = () => {
               </Badge>
             );
           default:
-            return <Badge variant={"outline"}>.</Badge>;
+            return <Badge variant={"outline"}>-</Badge>;
         }
       },
     },
@@ -137,20 +134,9 @@ const ProductTableComponent = () => {
         </Button>
       ),
       cell: ({ row }) => {
-        const dateValue = row.getValue("createdAt");
+        const dateValue = row.getValue("createdAt") as Date;
 
-        let formattedDate = "N/A";
-        if (typeof dateValue === "string" || typeof dateValue === "number") {
-          const dateObj = new Date(dateValue);
-          if (!isNaN(dateObj.getTime())) {
-            formattedDate = dateObj.toLocaleDateString("en-US", {
-              year: "numeric",
-              month: "short",
-              day: "numeric",
-            });
-          }
-        }
-        return <div>{formattedDate}</div>;
+        return <div>{formattedDate(dateValue)}</div>;
       },
     },
     {
@@ -159,11 +145,10 @@ const ProductTableComponent = () => {
       cell: ({ row }) => {
         const pId = row.original.id as number;
         const referenceNo = row.getValue("referenceNo") as string;
+        const status = row.getValue("status");
         const pass = row.original.qcInspections;
         const passed = pass[0]?.passed;
-        const stat =
-          row.getValue("status") === "COMPLETED" ||
-          row.getValue("status") === "CANCELLED";
+        const stat = status === "COMPLETED" || status === "CANCELLED";
         return (
           <div className="flex gap-2">
             <ProductDetailDialog
@@ -174,27 +159,30 @@ const ProductTableComponent = () => {
               }
               reffNo={referenceNo}
               actionBtn={
-                roles === "QC" && (
+                role === "QC" && (
                   <Button
                     size={"icon"}
                     variant={"outline"}
+                    disabled={status === "COMPLETED"}
                     onClick={() => handleGetQcReport(referenceNo)}>
                     <FileDown />
                   </Button>
                 )
               }
             />
-            {roles === "QC" && (
+            {role === "QC" && (
               <QcFormDialog
                 trigger={
-                  <Button size={"icon"} disabled={passed}>
+                  <Button
+                    size={"icon"}
+                    disabled={passed || status !== "PENDING"}>
                     <FileCheck2 />
                   </Button>
                 }
                 prodId={pId}
               />
             )}
-            {roles === "OPERATOR" && (
+            {role === "OPERATOR" && (
               <>
                 <ProductFormDialog
                   trigger={
@@ -267,7 +255,7 @@ const ProductTableComponent = () => {
       console.error("Error downloading file:", error);
     }
   };
-  
+
   const handleDelete = async (referenceNo: string) => {
     const res = await deleteProduct(referenceNo);
     if (isPending) {

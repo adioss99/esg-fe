@@ -106,7 +106,7 @@ const ProductDetailDialog = ({
                   <TableBody className="overflow-hidden">
                     {production.qcInspections.map((qc) => (
                       <TableRow key={qc.id}>
-                        <TableCell>{qc.inspectorUser.name}</TableCell>
+                        <TableCell>{qc.inspectorUser.email}</TableCell>
                         <TableCell>
                           <Badge
                             className={`px-2 py-1 rounded-full font-medium ${

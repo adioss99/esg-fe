@@ -4,5 +4,7 @@ export const formattedDate = (dateValue: string | Date) => {
     year: "numeric",
     month: "short",
     day: "numeric",
+    hour: "numeric",
+    minute: "numeric",
   });
 };

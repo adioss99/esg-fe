@@ -18,7 +18,7 @@ const ProductPage = () => {
           }
         />
       </div>
-      <ProductTableComponent />
+      <ProductTableComponent role="OPERATOR"/>
     </>
   );
 };
