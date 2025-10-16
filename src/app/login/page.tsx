@@ -10,7 +10,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
+import { Input, InputPassword } from "@/components/ui/input";
 import { useLogin } from "@/hooks/use-auth";
 import { roleRedirect } from "@/lib/redirect";
 import { loginSchema, LoginSchemaType } from "@/validator/user-validator";
@@ -75,8 +75,7 @@ const LoginPage = () => {
                 <FormItem>
                   <FormLabel>Password</FormLabel>
                   <FormControl>
-                    <Input
-                      type="password"
+                    <InputPassword
                       placeholder="Password"
                       className="w-full"
                       {...field}
