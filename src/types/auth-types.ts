@@ -24,6 +24,7 @@ export interface UserType {
 export type UserProfileResponse = ApiResponse<UserType>;
 export type LoginResponse = UserProfileResponse & {
   accessToken: string;
+  refreshToken: string;
 };
 export type RegisterResponse = UserProfileResponse;
 export type RefreshTokenResponse = ApiResponse<{

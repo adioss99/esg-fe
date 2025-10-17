@@ -1,18 +1,13 @@
 "use client";
 
 import React from "react";
-// import { cookies } from "next/headers";
-import { UserType } from "@/types/auth-types";
-import jwt from "jsonwebtoken";
 import { roleRedirect } from "@/lib/redirect";
 import { usePersistStore } from "@/stores/use-persist";
+import { decodeToken } from "@/lib/jwt";
 
 const IsGuest = ({ children }: { children: React.ReactNode }) => {
-  // const cookieStore = await cookies();
-  // const token = cookieStore.get("refreshToken")?.value;
-
   const token = usePersistStore((state) => state.auth.token);
-  const user = jwt.decode(token as string) as UserType | null;
+  const user = decodeToken(token as string) as unknown as { role: string };
 
   if (token) {
     roleRedirect(user?.role as string);

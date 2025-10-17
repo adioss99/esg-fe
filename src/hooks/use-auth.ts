@@ -7,7 +7,7 @@ import {
   RefreshTokenResponse,
 } from "@/types/auth-types";
 import { apiFetch } from "@/api";
-import { useRoles } from "@/stores/use-roles";
+import { deleteRefreshCookie } from "@/lib/cookies";
 
 export const useLogin = () => {
   const setAuthToken = usePersistStore((state) => state.setAuthToken);
@@ -35,7 +35,6 @@ export const useLogin = () => {
 
 export const useLogout = () => {
   const logout = usePersistStore((state) => state.logout);
-  const reset = useRoles((state) => state.reset);
   return useMutation({
     mutationKey: ["logout"],
     mutationFn: () => apiFetch("/logout", { method: "DELETE" }),
@@ -44,7 +43,7 @@ export const useLogout = () => {
     },
     onSettled: () => {
       logout();
-      reset();
+      deleteRefreshCookie();
     },
     retry: false,
   });
@@ -61,11 +60,13 @@ export const useGetRefreshToken = () => {
       if (res.success) {
         setAuthToken({
           token: res.accessToken,
+          _user: res.data.role,
         });
       }
     },
     onError: () => {
       logout();
+      deleteRefreshCookie();
       throw new Error("Internal Server Error");
     },
     retry: false,
