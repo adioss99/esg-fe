@@ -5,9 +5,11 @@ type JwtPayload = {
   exp: number;
 };
 
+export const decodeToken = (token: string) => jwt.decode(token) as JwtPayload;
+
 const getRemainingTime = (token: string) => {
   try {
-    const decoded = jwt.decode(token) as JwtPayload;
+    const decoded = decodeToken(token);
     const now = Math.floor(Date.now() / 1000);
     return decoded.exp - now; // seconds left
   } catch (err) {

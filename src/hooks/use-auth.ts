@@ -7,6 +7,7 @@ import {
   RefreshTokenResponse,
 } from "@/types/auth-types";
 import { apiFetch } from "@/api";
+import { useRoles } from "@/stores/use-roles";
 
 export const useLogin = () => {
   const setAuthToken = usePersistStore((state) => state.setAuthToken);
@@ -34,15 +35,16 @@ export const useLogin = () => {
 
 export const useLogout = () => {
   const logout = usePersistStore((state) => state.logout);
+  const reset = useRoles((state) => state.reset);
   return useMutation({
     mutationKey: ["logout"],
     mutationFn: () => apiFetch("/logout", { method: "DELETE" }),
-    onSuccess: () => {
-      logout();
-    },
     onError: () => {
-      logout();
       throw new Error("Internal Server Error");
+    },
+    onSettled: () => {
+      logout();
+      reset();
     },
     retry: false,
   });
