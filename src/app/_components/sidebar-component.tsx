@@ -16,7 +16,7 @@ import { redirect } from "next/navigation";
 import { LogOut } from "lucide-react";
 import { useLogout } from "@/hooks/use-auth";
 import toast from "react-hot-toast";
-import SidebarMenus, { MenuItem } from "@/components/sidebar-menu";
+import SidebarMenus, { MenuItem } from "@/app/_components/sidebar-menu";
 import { useRoles } from "@/stores/use-roles";
 import { Button } from "@/components/ui/button";
 import {

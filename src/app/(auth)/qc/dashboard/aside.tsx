@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import SidebarComponent from "@/components/sidebar-component";
+import SidebarComponent from "@/app/_components/sidebar-component";
 
 import { MdSpaceDashboard } from "react-icons/md";
 import { FaBoxOpen } from "react-icons/fa";
