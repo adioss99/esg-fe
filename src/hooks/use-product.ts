@@ -18,11 +18,12 @@ export const useGetProducts = () => {
   });
 };
 
-export const useGetProductDetail = (referenceNo: string) => {
+export const useGetProductDetail = (referenceNo: string, enabled: boolean) => {
   return useQuery<ProductDetailResponse>({
     queryKey: ["product", referenceNo],
     queryFn: () =>
       apiFetch<ProductDetailResponse>(`/production-order/${referenceNo}`),
+    enabled,
     retry: false,
   });
 };

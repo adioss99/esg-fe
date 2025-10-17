@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 
 import {
   Dialog,
@@ -33,7 +33,11 @@ const ProductDetailDialog = ({
   reffNo,
   actionBtn,
 }: DialogProductComponentProps) => {
-  const { data, isLoading, isError, error } = useGetProductDetail(reffNo!);
+  const [isOpen, setIsOpen] = useState(false);
+  const { data, isLoading, isError, error } = useGetProductDetail(
+    reffNo!,
+    isOpen
+  );
 
   const production = data?.data;
 
@@ -42,7 +46,7 @@ const ProductDetailDialog = ({
   }
 
   return (
-    <Dialog>
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>{trigerBtn}</DialogTrigger>
       <DialogContent className="w-full">
         <DialogHeader>
@@ -121,9 +125,7 @@ const ProductDetailDialog = ({
                           {qc.notes ? (
                             qc.notes
                           ) : (
-                            <span className="text-gray-400">
-                              —
-                            </span>
+                            <span className="text-gray-400">—</span>
                           )}
                         </TableCell>
                         <TableCell>{formattedDate(qc.createdAt)}</TableCell>

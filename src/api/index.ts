@@ -48,7 +48,7 @@ export async function apiFetch<T>(
         throw new Error("Unauthorized - refresh failed");
       }
     } catch (err) {
-      logout();
+      // logout();
       throw new Error("Fetch error: " + err);
     }
   } else if (res.status === 500) {
