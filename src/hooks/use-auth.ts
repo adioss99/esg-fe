@@ -7,7 +7,6 @@ import {
   RefreshTokenResponse,
 } from "@/types/auth-types";
 import { apiFetch } from "@/api";
-import { deleteRefreshCookie } from "@/lib/cookies";
 
 export const useLogin = () => {
   const setAuthToken = usePersistStore((state) => state.setAuthToken);
@@ -43,7 +42,6 @@ export const useLogout = () => {
     },
     onSettled: () => {
       logout();
-      deleteRefreshCookie();
     },
     retry: false,
   });
@@ -66,7 +64,6 @@ export const useGetRefreshToken = () => {
     },
     onError: () => {
       logout();
-      deleteRefreshCookie();
       throw new Error("Internal Server Error");
     },
     retry: false,
