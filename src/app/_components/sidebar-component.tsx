@@ -30,6 +30,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { usePersistStore } from "@/stores/use-persist";
 import { decodeToken } from "@/lib/jwt";
+import { deleteRefresh } from "@/api";
 
 const SidebarComponent = ({
   children,
@@ -48,10 +49,7 @@ const SidebarComponent = ({
   const handleLogout = async () => {
     await logout();
     toast.success("Logout success.");
-    await fetch("/api/set-refresh", {
-      method: "DELETE",
-      headers: { "Content-Type": "application/json" },
-    });
+    await deleteRefresh();
     redirect("/");
   };
 

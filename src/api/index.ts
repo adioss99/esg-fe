@@ -36,6 +36,7 @@ export async function apiFetch<T>(
     try {
       const refreshRes = await getRefreshToken(); // will use cookies
       if (refreshRes.success) {
+        console.log(refreshRes);
         // update Zustand with new token
         setAuthToken({
           token: refreshRes.accessToken,
@@ -44,12 +45,13 @@ export async function apiFetch<T>(
         // retry original request with new token
         res = await doFetch(refreshRes.accessToken);
       } else {
-        // refresh failed, logout
+        await deleteRefresh();
         logout();
         throw new Error("Unauthorized - refresh failed");
       }
     } catch (err) {
-      // logout();
+      await deleteRefresh();
+      logout();
       throw new Error("Fetch error: " + err);
     }
   } else if (res.status === 500) {
@@ -85,4 +87,19 @@ const getRefreshToken = async (): Promise<RefreshTokenResponse> => {
   });
   const resData = await response.json();
   return resData;
+};
+
+export const setRefresh = async (token: string) => {
+  await fetch("/api/set-refresh", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ token }),
+  });
+};
+
+export const deleteRefresh = async () => {
+  await fetch("/api/set-refresh", {
+    method: "DELETE",
+    headers: { "Content-Type": "application/json" },
+  });
 };

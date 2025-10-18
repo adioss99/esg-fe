@@ -1,5 +1,6 @@
 "use client";
 
+import { setRefresh } from "@/api";
 import { Logo } from "@/components/logo";
 import { Button } from "@/components/ui/button";
 import {
@@ -34,11 +35,7 @@ const LoginPage = () => {
       toast.error(res.message);
       return;
     }
-    await fetch("/api/set-refresh", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ token: res.refreshToken }),
-    });
+    await setRefresh(res.refreshToken);
     toast.success("Login success.");
     roleRedirect(res.data.role as string);
   };

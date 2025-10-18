@@ -6,7 +6,7 @@ import {
   LoginResponse,
   RefreshTokenResponse,
 } from "@/types/auth-types";
-import { apiFetch } from "@/api";
+import { apiFetch, deleteRefresh } from "@/api";
 
 export const useLogin = () => {
   const setAuthToken = usePersistStore((state) => state.setAuthToken);
@@ -40,7 +40,8 @@ export const useLogout = () => {
     onError: () => {
       throw new Error("Internal Server Error");
     },
-    onSettled: () => {
+    onSettled: async () => {
+      await deleteRefresh();
       logout();
     },
     retry: false,
@@ -62,8 +63,9 @@ export const useGetRefreshToken = () => {
         });
       }
     },
-    onError: () => {
+    onError: async () => {
       logout();
+      await deleteRefresh();
       throw new Error("Internal Server Error");
     },
     retry: false,
