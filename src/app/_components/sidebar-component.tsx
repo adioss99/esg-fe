@@ -48,6 +48,10 @@ const SidebarComponent = ({
   const handleLogout = async () => {
     await logout();
     toast.success("Logout success.");
+    await fetch("/api/set-refresh", {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+    });
     redirect("/");
   };
 

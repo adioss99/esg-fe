@@ -39,6 +39,7 @@ export async function apiFetch<T>(
         // update Zustand with new token
         setAuthToken({
           token: refreshRes.accessToken,
+          _user: refreshRes.data.role,
         });
         // retry original request with new token
         res = await doFetch(refreshRes.accessToken);
