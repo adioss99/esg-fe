@@ -36,7 +36,6 @@ export async function apiFetch<T>(
     try {
       const refreshRes = await getRefreshToken(); // will use cookies
       if (refreshRes.success) {
-        console.log(refreshRes);
         // update Zustand with new token
         setAuthToken({
           token: refreshRes.accessToken,

@@ -4,6 +4,7 @@
  * !Do NOT use this store for temporary data
  */
 
+import { redirect } from "next/navigation";
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 
@@ -36,10 +37,12 @@ export const usePersistStore = create<PersistState>()(
           },
         })),
 
-      logout: () =>
-        set({
+      logout: () => {
+        (set({
           auth: { token: undefined, _user: undefined },
         }),
+          redirect("/login"));
+      },
     }),
     {
       name: "app-storage",
